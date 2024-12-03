@@ -1,12 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_migrate import Migrate
-from werkzeug.security import check_password_hash
 from models import db, User, ApiData
 from config import Config
+from Forms import RegistrationForm
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.config['SECRET_KEY'] = 'fksdksk$gcdhcbbd%hdicbd'
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -36,6 +38,7 @@ def create_api_data():
     new_data = ApiData(
         first_name=data.get('first_name'),
         last_name=data.get('last_name'),
+        email=data.get('email'),
         start_date=data.get('start_time'),
         end_date=data.get('end_time'),
         total_time=data.get('total_time'),
@@ -45,6 +48,28 @@ def create_api_data():
     db.session.add(new_data)
     db.session.commit()
     return jsonify({"message": "Данные успешно добавлены!"}), 200
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        new_user = User(
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data,
+            password_hash=generate_password_hash(form.password.data)
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Регистрация прошла успешно! Спасибо за регистрацию.', 'success')
+        return redirect(url_for('welcome'))
+    return render_template('register.html', form=form)
+
+
+@app.route('/welcome')
+def welcome():
+    return render_template('welcome.html')
 
 
 if __name__ == '__main__':
