@@ -118,9 +118,11 @@ def login_boss():
 def dashboard(id):
     if 'user_id' not in session or session['user_id'] != id:
         return redirect(url_for('login_boss'))
-
-    boss = Boss.query.get_or_404(id)
-    return render_template('dashboard.html', boss=boss)
+    boss = Boss.query.get(id)
+    print(boss.unique_token)
+    api_data_records = ApiData.query.filter_by(boss_token=boss.unique_token).all()
+    print(api_data_records)
+    return render_template('dashboard.html', boss=boss, users=api_data_records)
 
 
 @app.route('/logout')

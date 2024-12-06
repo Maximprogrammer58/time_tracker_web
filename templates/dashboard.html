@@ -2,13 +2,71 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
     <title>Личный кабинет</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function toggleTable(tableId) {
+            const table = document.getElementById(tableId);
+            table.classList.toggle('hidden');
+        }
+    </script>
 </head>
 <body>
-    <h1>Добро пожаловать, {{ boss.name }} {{ boss.surname }}!</h1>
-    <p>Email: {{ boss.email }}</p>
-    <p>Уникальный токен: {{ boss.unique_token }}</p>
-    <a href="{{ url_for('logout') }}">Выйти</a>
+    <div class="container">
+        <a href="{{ url_for('logout') }}" class="logout-link">Выход</a>
+        <h1>Личный кабинет</h1>
+        <div class="user-info">
+            <h2>{{ boss.name }} {{ boss.last_name }}</h2>
+            <p>Email: {{ boss.email }}</p>
+            <p>Token: {{ boss.unique_token }}</p>
+        </div>
+        <h3>Список пользователей</h3>
+        <ul class="user-list">
+            {% for user in users %}
+                <li>
+                    {{ user.first_name }} {{ user.last_name }} - {{ user.email }} <br>
+                    Start Date: {{ user.start_date }} <br>
+                    End Date: {{ user.end_date }} <br>
+                    <div class="buttons">
+                        <button class="button" onclick="toggleTable('results-{{ user.id }}')">Подробнее</button>
+                        <button class="button" onclick="toggleTable('visited-{{ user.id }}')">Журнал</button>
+                    </div>
+                    <table id="results-{{ user.id }}" class="table hidden">
+                        <thead>
+                            <tr>
+                                <th>Приложение</th>
+                                <th>Время</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app, time in user.results.items() %}
+                                <tr>
+                                    <td>{{ app }}</td>
+                                    <td>{{ time }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <table id="visited-{{ user.id }}" class="table hidden">
+                        <thead>
+                            <tr>
+                                <th>Приложение</th>
+                                <th>Время</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app, time in user.visited_apps.items() %}
+                                <tr>
+                                    <td>{{ app }}</td>
+                                    <td>{{ time }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
