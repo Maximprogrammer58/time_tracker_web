@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Добро пожаловать, {{ boss.name }} {{ boss.surname }}!</h1>
+    <p>Email: {{ boss.email }}</p>
+    <p>Уникальный токен: {{ boss.unique_token }}</p>
+    <a href="{{ url_for('logout') }}">Выйти</a>
+</body>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Регистрация</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
@@ -26,6 +26,10 @@
             <div class="form-group">
                 {{ form.password.label(class="form-label") }}
                 {{ form.password(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.boss_token.label(class="form-label") }}
+                {{ form.boss_token(class="form-control") }}
             </div>
             <div class="form-group">
                 {{ form.submit(class="btn btn-primary") }}
