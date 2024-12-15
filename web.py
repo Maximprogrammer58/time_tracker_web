@@ -1,10 +1,10 @@
 import uuid
 
+from config import Config
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
 from flask_migrate import Migrate
-from models import db, User, ApiData, Boss
-from config import Config
 from Forms import RegistrationForm, RegistrationBossForm, LoginForm
+from models import db, User, ApiData, Boss
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -38,14 +38,14 @@ def login():
 def create_api_data():
     data = request.json
     new_data = ApiData(
-        first_name=data.get('first_name'),
-        last_name=data.get('last_name'),
-        email=data.get('email'),
-        start_date=data.get('start_time'),
-        end_date=data.get('end_time'),
-        total_time=data.get('total_time'),
-        results=data.get('results'),
-        visited_apps=data.get('visited_apps'),
+        first_name = data.get('first_name'),
+        last_name = data.get('last_name'),
+        email = data.get('email'),
+        start_date = data.get('start_time'),
+        end_date = data.get('end_time'),
+        total_time = data.get('total_time'),
+        results = data.get('results'),
+        visited_apps = data.get('visited_apps'),
         boss_token = data.get('boss_token')
     )
     db.session.add(new_data)
@@ -58,46 +58,38 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         new_user = User(
-            first_name=form.first_name.data,
-            last_name=form.last_name.data,
-            email=form.email.data,
-            password_hash=generate_password_hash(form.password.data),
+            first_name = form.first_name.data,
+            last_name = form.last_name.data,
+            email = form.email.data,
+            password_hash = generate_password_hash(form.password.data),
             boss_token = form.boss_token.data
         )
         db.session.add(new_user)
         db.session.commit()
         flash('Регистрация прошла успешно! Спасибо за регистрацию.', 'success')
-        return redirect(url_for('welcome'))
+        return redirect(url_for('register'))
     return render_template('register.html', form=form)
-
-
-@app.route('/welcome')
-def welcome():
-    return render_template('welcome.html')
 
 
 @app.route('/register_boss', methods=['GET', 'POST'])
 def register_boss():
     form = RegistrationBossForm()
     if form.validate_on_submit():
-        name = form.first_name.data
-        last_name = form.last_name.data
-        email = form.email.data
-        password = form.password.data
-        unique_token = str(uuid.uuid4())
-
-        hashed_password = generate_password_hash(password)
-        new_boss = Boss(name=name, last_name=last_name, email=email, password_hash=hashed_password, unique_token=unique_token)
-
+        new_boss = Boss(
+            name = form.first_name.data,
+            last_name = form.last_name.data,
+            email = form.email.data,
+            password_hash = generate_password_hash(form.password.data),
+            unique_token = str(uuid.uuid4())
+        )
         db.session.add(new_boss)
         db.session.commit()
         flash('Регистрация успешна! Пожалуйста, войдите.', 'success')
         return redirect(url_for('login_boss'))
-
     return render_template('register_boss.html', form=form)
 
 
-@app.route('/login_boss', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def login_boss():
     form = LoginForm()
     if form.validate_on_submit():
@@ -109,8 +101,7 @@ def login_boss():
             session['user_id'] = boss.id
             return redirect(url_for('dashboard', id=boss.id))
 
-        flash('Неверный email или пароль', 'danger')
-
+        flash('Неверный email или пароль', 'error')
     return render_template('login_boss.html', form=form)
 
 
@@ -119,9 +110,7 @@ def dashboard(id):
     if 'user_id' not in session or session['user_id'] != id:
         return redirect(url_for('login_boss'))
     boss = Boss.query.get(id)
-    print(boss.unique_token)
     api_data_records = ApiData.query.filter_by(boss_token=boss.unique_token).all()
-    print(api_data_records)
     return render_template('dashboard.html', boss=boss, users=api_data_records)
 
 

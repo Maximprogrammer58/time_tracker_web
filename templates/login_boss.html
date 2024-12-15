@@ -7,6 +7,13 @@
 </head>
 <body>
     <h1>Вход</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+    {% endwith %}
     <form method="POST">
         {{ form.hidden_tag() }}
         <p>
@@ -28,5 +35,6 @@
         </p>
     </form>
     <a href="{{ url_for('register_boss') }}">Нет аккаунта? Зарегистрируйтесь</a>
+    <a href="{{ url_for('register') }}">Регистрация сотрудников</a>
 </body>
 </html>
