@@ -105,13 +105,24 @@ def login_boss():
     return render_template('login_boss.html', form=form)
 
 
-@app.route('/dashboard/<int:id>')
+@app.route('/dashboard/<int:id>', methods=['GET', 'POST'])
 def dashboard(id):
     if 'user_id' not in session or session['user_id'] != id:
         return redirect(url_for('login_boss'))
+
     boss = Boss.query.get(id)
+
     api_data_records = ApiData.query.filter_by(boss_token=boss.unique_token).all()
-    return render_template('dashboard.html', boss=boss, users=api_data_records)
+    unique_users = {user.email: user for user in api_data_records}.values()
+
+    selected_email = None
+    if request.method == 'POST':
+        selected_email = request.form.get('user_email')
+        if selected_email:
+            api_data_records = [record for record in api_data_records if record.email == selected_email]
+
+    return render_template('dashboard.html', boss=boss, users=api_data_records, unique_users=unique_users,
+                           selected_email=selected_email)
 
 
 @app.route('/logout')

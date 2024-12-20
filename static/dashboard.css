@@ -87,3 +87,71 @@ h1 {
 .table th {
    background-color: #f2f2f2;
 }
+
+.filter-container {
+   margin: 20px 0;
+   padding: 10px;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   background-color: #f9f9f9;
+}
+
+.filter-container select {
+   padding: 8px;
+   border: 1px solid #007BFF;
+   border-radius: 5px;
+   font-size: 16px;
+}
+
+.filter-container button {
+   padding: 8px 15px;
+   margin-left: 10px;
+   border: none;
+   border-radius: 5px;
+   background-color: #007BFF;
+   color: white;
+   font-size: 16px;
+   cursor: pointer;
+   transition: background-color 0.3s;
+}
+
+.filter-container button:hover {
+   background-color: #0056b3;
+}
+
+.table-container {
+   margin-top: 10px;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   padding: 10px;
+   background-color: #f9f9f9;
+}
+
+.hidden {
+   display: none;
+}
+
+.buttons {
+   margin-top: 10px;
+}
+
+.button {
+   padding: 10px 20px;
+   margin-right: 5px;
+   border: none;
+   border-radius: 5px;
+   background-color: #28a745;
+   color: white;
+   font-size: 16px;
+   cursor: pointer;
+   transition: background-color 0.3s, transform 0.2s;
+}
+
+.button:hover {
+   background-color: #218838;
+   transform: scale(1.05);
+}
+
+.button:active {
+   transform: scale(0.95);
+}
