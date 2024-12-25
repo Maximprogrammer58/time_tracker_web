@@ -10,9 +10,9 @@
             const table = document.getElementById(tableId);
             table.classList.toggle('hidden');
             if (table.classList.contains('hidden')) {
-                button.style.backgroundColor = '#28a745'; // Исходный зеленый цвет
+                button.style.backgroundColor = '#28a745'; // Зеленый цвет
             } else {
-                button.style.backgroundColor = '#dc3545'; // Красный цвет при открытии
+                button.style.backgroundColor = '#dc3545'; // Красный цвет
             }
         }
     </script>
@@ -47,12 +47,13 @@
             {% for user in users %}
                 <li>
                     <div class="user-info">
-                        {{ user.first_name }} {{ user.last_name }} - {{ user.email }} <br>
-                        Start Date: {{ user.start_date }} <br>
-                        End Date: {{ user.end_date }} <br>
+                        <strong>{{ user.first_name }} {{ user.last_name }}</strong> - {{ user.email }} <br>
+                        Начало работы: {{ user.start_date }} <br>
+                        Конец работы: {{ user.end_date }} <br>
+                        Общее время: {{ user.total_time }} <br>
                         <div class="buttons">
-                            <button class="button" onclick="toggleTable('results-{{ user.id }}', this)">Подробнее</button>
-                            <button class="button" onclick="toggleTable('visited-{{ user.id }}', this)">Журнал</button>
+                            <button class="button" onclick="toggleTable('results-{{ user.id }}', this)">Результаты</button>
+                            <button class="button" onclick="toggleTable('visited-{{ user.id }}', this)">Посещенные приложения</button>
                         </div>
                     </div>
                     <div class="table-container hidden" id="results-{{ user.id }}">
@@ -61,14 +62,23 @@
                             <thead>
                                 <tr>
                                     <th>Приложение</th>
-                                    <th>Время</th>
+                                    <th>Время (ч:м:с)</th>
+                                    <th>Процент</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for app, time in user.results.items() %}
+                                {% for app, data in user.results.items() %}
                                     <tr>
                                         <td>{{ app }}</td>
-                                        <td>{{ time }}</td>
+                                        <td>{{ data.time // 3600 }} ч {{ (data.time % 3600) // 60 }} мин {{ data.time % 60 }} сек</td>
+                                        <td>
+                                            <div class="progress-container">
+                                                <div class="progress-bar">
+                                                    <div class="filler" style="width: {{ data.percentage }}%;"></div>
+                                                </div>
+                                                <span class="progress-percentage">{{ data.percentage }}%</span>
+                                            </div>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -80,7 +90,7 @@
                             <thead>
                                 <tr>
                                     <th>Приложение</th>
-                                    <th>Время</th>
+                                    <th>Время (ч:м:с)</th>
                                 </tr>
                             </thead>
                             <tbody>

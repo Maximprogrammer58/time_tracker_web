@@ -1,3 +1,4 @@
+import re
 import uuid
 
 from config import Config
@@ -105,13 +106,21 @@ def login_boss():
     return render_template('login_boss.html', form=form)
 
 
+def time_to_seconds_v2(time_str):
+    pattern = r"(\d+)\s*ч\s*(\d+)\s*мин\s*(\d+)\s*сек"
+    match = re.match(pattern, time_str)
+    if match:
+        hours, minutes, seconds = map(int, match.groups())
+        return hours * 3600 + minutes * 60 + seconds
+    return 0
+
+
 @app.route('/dashboard/<int:id>', methods=['GET', 'POST'])
 def dashboard(id):
     if 'user_id' not in session or session['user_id'] != id:
         return redirect(url_for('login_boss'))
 
     boss = Boss.query.get(id)
-
     api_data_records = ApiData.query.filter_by(boss_token=boss.unique_token).all()
     unique_users = {user.email: user for user in api_data_records}.values()
 
@@ -121,8 +130,24 @@ def dashboard(id):
         if selected_email:
             api_data_records = [record for record in api_data_records if record.email == selected_email]
 
-    return render_template('dashboard.html', boss=boss, users=api_data_records, unique_users=unique_users,
-                           selected_email=selected_email)
+    for record in api_data_records:
+        total_time_seconds = time_to_seconds_v2(record.total_time)
+        if record.results:
+            record.results = {
+                app: {
+                    "time": time_to_seconds_v2(time),
+                    "percentage": round((time_to_seconds_v2(time) / total_time_seconds) * 100, 2) if total_time_seconds else 0
+                }
+                for app, time in record.results.items()
+            }
+
+    return render_template(
+        'dashboard.html',
+        boss=boss,
+        users=api_data_records,
+        unique_users=unique_users,
+        selected_email=selected_email
+    )
 
 
 @app.route('/logout')
