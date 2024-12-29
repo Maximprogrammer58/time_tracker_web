@@ -43,13 +43,17 @@
             <div class="form-group">
                 {{ form.boss_token.label(class="form-label") }}
                 {{ form.boss_token(class="form-control") }}
+                {% for error in form.boss_token.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
             </div>
+
             <div class="form-group">
                 {{ form.submit(class="btn btn-primary") }}
             </div>
         </form>
         <a href="{{ url_for('register_boss') }}">Регистрация для компании</a>
-        <a href="{{ url_for('register') }}">Вход для компании</a>
+        <a href="{{ url_for('login_boss') }}">Вход для компании</a>
     </div>
 </body>
 </html>

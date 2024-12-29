@@ -24,6 +24,12 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('Этот email уже зарегистрирован.')
 
+    def validate_boss_token(self, boss_token):
+        if boss_token.data:
+            boss = Boss.query.filter_by(unique_token=boss_token.data).first()
+            if not boss:
+                raise ValidationError('Указанный boss_token недействителен. Проверьте правильность токена.')
+
 
 class RegistrationBossForm(FlaskForm):
     first_name = StringField('Имя', validators=[DataRequired(), Length(max=50)])

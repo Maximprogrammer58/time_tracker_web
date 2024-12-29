@@ -59,11 +59,11 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         new_user = User(
-            first_name = form.first_name.data,
-            last_name = form.last_name.data,
-            email = form.email.data,
-            password_hash = generate_password_hash(form.password.data),
-            boss_token = form.boss_token.data
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data,
+            password_hash=generate_password_hash(form.password.data),
+            boss_token=form.boss_token.data
         )
         db.session.add(new_user)
         db.session.commit()
